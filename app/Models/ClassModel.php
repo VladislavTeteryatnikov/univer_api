@@ -8,6 +8,7 @@ class ClassModel extends Model
 {
     protected $table = 'classes';
     protected $fillable = ['name'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function students()
     {
@@ -16,7 +17,11 @@ class ClassModel extends Model
 
     public function lectures()
     {
-        return $this->belongsToMany(Lecture::class, 'classes_lectures')
-            ->withPivot('order');
+        return $this->belongsToMany(
+            Lecture::class,
+            'classes_lectures',
+        'class_id',
+            'lecture_id'
+        )->withPivot(['order', 'completed']);
     }
 }

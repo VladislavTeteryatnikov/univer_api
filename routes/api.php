@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\LectureController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,4 +13,5 @@ Route::apiResource('classes', ClassController::class);
 Route::get('/classes/{id}/lectures', [ClassController::class, 'studyPlan']);
 Route::put('/classes/{id}/lectures', [ClassController::class, 'updateStudyPlan']);
 
+Route::apiResource('lectures', LectureController::class);
 

@@ -14,6 +14,11 @@ class Lecture extends Model
 
     public function classes()
     {
-        return $this->belongsToMany(ClassModel::class, 'classes_lectures');
+        return $this->belongsToMany(
+            ClassModel::class,
+            'classes_lectures',
+            'lecture_id',
+            'class_id',
+        )->withPivot(['order', 'completed']);
     }
 }

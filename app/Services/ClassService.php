@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\ClassModel;
-use App\Models\Student;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 

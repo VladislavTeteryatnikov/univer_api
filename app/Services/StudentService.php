@@ -10,11 +10,11 @@ use Illuminate\Support\Collection as SupportCollection;
 class StudentService
 {
     /**
-     * @return Collection
+     * @return SupportCollection
      */
     public function getAllStudents(): SupportCollection
     {
-        return Student::query()->pluck('name', 'id');
+        return Student::query()->orderBy('id')->pluck('name', 'id');
     }
 
     /**

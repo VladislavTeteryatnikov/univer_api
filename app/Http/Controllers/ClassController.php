@@ -7,7 +7,6 @@ use App\Http\Requests\Classes\UpdateClassRequest;
 use App\Http\Requests\Classes\UpdateStudyPlanRequest;
 use App\Services\ClassService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ClassController extends BaseController
 {

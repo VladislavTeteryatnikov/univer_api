@@ -17,6 +17,10 @@ class StudentService
         return Student::query()->pluck('name', 'id');
     }
 
+    /**
+     * @param int $id
+     * @return array|null
+     */
     public function getStudentInfo(int $id): ?array
     {
         $student = Student::with('class.lectures')
@@ -34,6 +38,10 @@ class StudentService
         ];
     }
 
+    /**
+     * @param ClassModel $class
+     * @return array
+     */
     private function getCompletedLectures(ClassModel $class): array
     {
         return $class->lectures
@@ -68,7 +76,7 @@ class StudentService
     /**
      * @param int $id
      * @param array $data
-     * @return array
+     * @return array|null
      */
     public function updateStudent(int $id, array $data): ?array
     {

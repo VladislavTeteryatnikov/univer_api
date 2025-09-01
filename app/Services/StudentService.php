@@ -36,6 +36,7 @@ class StudentService
         }
 
         return [
+            'id' => $student->id,
             'name' => $student->name,
             'email' => $student->email,
             'class' => $student->class ?

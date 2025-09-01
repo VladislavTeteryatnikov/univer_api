@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 class StudentController extends BaseController
 {
 
-    public function __construct(private StudentService $service){}
+    public function __construct(private StudentService $service) {}
 
     public function index(): JsonResponse
     {
@@ -22,7 +22,7 @@ class StudentController extends BaseController
     {
         $student = $this->service->getStudentInfo($id);
 
-        if (!$student) {
+        if ($student === null) {
             return $this->sendError('Student Not Found');
         }
 
@@ -32,7 +32,6 @@ class StudentController extends BaseController
     public function store(StoreStudentRequest $request): JsonResponse
     {
         $data = $this->service->createStudent($request->validated());
-
         return $this->sendResponse($data, 'Student created', 201);
     }
 
@@ -40,18 +39,18 @@ class StudentController extends BaseController
     {
         $data = $this->service->updateStudent($id, $request->validated());
 
-        if (!$data) {
+        if ($data === null) {
             return $this->sendError('Student Not Found');
         }
 
         return $this->sendResponse($data, 'Student updated');
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
         $deleted = $this->service->removeStudent($id);
 
-        if (!$deleted) {
+        if ($deleted === false) {
             return $this->sendError('Student Not Found');
         }
 

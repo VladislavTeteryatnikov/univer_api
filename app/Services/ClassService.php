@@ -4,51 +4,52 @@ namespace App\Services;
 
 use App\Models\ClassModel;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 
 class ClassService
 {
     /**
-     * @return SupportCollection
+     * Получить все классы: id, name
+     *
+     * @return array
      */
-    public function getAllClasses(): SupportCollection
+    public function getAllClasses(): array
     {
-        return ClassModel::query()->orderBy('id')->pluck('name', 'id');
+        return ClassModel::query()
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->toArray();
     }
 
     /**
+     * Получить инфо о классе, включая его студентов
+     *
      * @param int $id
      * @return array|null
      */
-    public function getClassWithStudents(int $id)
+    public function getClassWithStudents(int $id): ?array
     {
         $class = ClassModel::with('students')->find($id);
 
-        if (!$class) {
+        if ($class === null) {
             return null;
         }
 
         return [
+            'class_id' => $class->id,
             'class_name' => $class->name,
-            'students' => $this->getStudentsByClass($class->students),
+            'students' => $class->students->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                ];
+            })->toArray()
         ];
     }
 
-    /**
-     * @param Collection $students
-     * @return array
-     */
-    private function getStudentsByClass(Collection $students): array
-    {
-        return $students->map(function ($student) {
-            return [
-                'name' => $student->name,
-                'email' => $student->email,
-            ];
-        })->toArray();
-    }
 
     /**
+     * Получить учебный план класса: лекции с order и completed
+     *
      * @param int $id
      * @return array|null
      */
@@ -56,36 +57,41 @@ class ClassService
     {
         $class = ClassModel::with('lectures')->find($id);
 
-        if (!$class) {
+        if ($class === null) {
             return null;
         }
 
         return [
+            'class_id' => $class->id,
             'class_name' => $class->name,
-            'lectures' => $this->getLecturesByClass($class->lectures),
+            'lectures' => $this->prepareLecturesForStudyPlan($class->lectures),
         ];
     }
 
     /**
+     * Подготовить лекции для показа в учебном плане
+     *
      * @param Collection $lectures
      * @return array
      */
-    private function getLecturesByClass(Collection $lectures): array
+    private function prepareLecturesForStudyPlan(Collection $lectures): array
     {
         return $lectures
             ->sortBy('pivot.order')
             ->map(function ($lecture) {
-            return [
-                'title' => $lecture->title,
-                'description' => $lecture->description,
-                'order' => $lecture->pivot->order,
-                'completed' => (bool) $lecture->pivot->completed,
-            ];
+                return [
+                    'id' => $lecture->id,
+                    'title' => $lecture->title,
+                    'order' => $lecture->pivot->order,
+                    'completed' => (bool) $lecture->pivot->completed,
+                ];
             })->values()
             ->toArray();
     }
 
     /**
+     * Обновить учебный план класса
+     *
      * @param int $classId
      * @param array $lectures
      * @return bool
@@ -94,16 +100,19 @@ class ClassService
     {
         $class = ClassModel::find($classId);
 
-        if (!$class) {
+        if ($class === null) {
             return false;
         }
 
         $syncData = $this->prepareDataForUpdateStudyPlan($lectures);
         $class->lectures()->sync($syncData);
+
         return true;
     }
 
     /**
+     * Подготовить данные для sync() в формате [lecture_id => [order, completed]]
+     *
      * @param array $lectures
      * @return array
      */
@@ -120,6 +129,8 @@ class ClassService
     }
 
     /**
+     * Создать класс
+     *
      * @param array $data
      * @return array
      */
@@ -134,6 +145,8 @@ class ClassService
     }
 
     /**
+     * Обновить класс
+     *
      * @param int $id
      * @param array $data
      * @return array|null
@@ -142,25 +155,53 @@ class ClassService
     {
         $class = ClassModel::find($id);
 
-        if (!$class) {
+        if ($class === null) {
             return null;
         }
 
         $class->update($data);
 
         return [
+            'id' => $class->id,
             'class_name' => $class->name
         ];
     }
 
+    /**
+     * Удалить класс
+     *
+     * @param int $id
+     * @return bool
+     */
     public function removeClass(int $id): bool
     {
         $class = ClassModel::find($id);
 
-        if (!$class) {
+        if ($class === null) {
             return false;
         }
 
         return $class->delete();
+    }
+
+    /**
+     * Получить пройденные лекции класса (completed true)
+     *
+     * @param ClassModel $class
+     * @return array
+     */
+    public function getCompletedLectures(ClassModel $class): array
+    {
+        return $class->lectures
+            ->where('pivot.completed', true)
+            ->sortBy('pivot.order')
+            ->map(function ($lecture) {
+                return [
+                    'id' => $lecture->id,
+                    'title' => $lecture->title,
+                ];
+            })
+            ->values()
+            ->toArray();
     }
 }

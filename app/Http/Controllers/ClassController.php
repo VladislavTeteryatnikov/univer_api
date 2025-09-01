@@ -15,7 +15,6 @@ class ClassController extends BaseController
     public function index(): JsonResponse
     {
         $classes = $this->service->getAllClasses();
-
         return $this->sendResponse($classes);
     }
 
@@ -23,7 +22,7 @@ class ClassController extends BaseController
     {
         $class = $this->service->getClassWithStudents($id);
 
-        if (!$class) {
+        if ($class === null) {
             return $this->sendError('Class Not Found');
         }
 
@@ -34,7 +33,7 @@ class ClassController extends BaseController
     {
         $data = $this->service->getClassStudyPlan($id);
 
-        if (!$data) {
+        if ($data === null) {
             return $this->sendError('Class Not Found');
         }
 
@@ -45,7 +44,7 @@ class ClassController extends BaseController
     {
         $updated = $this->service->updateClassStudyPlan($id, $request->input('lectures'));
 
-        if (!$updated) {
+        if ($updated === false) {
             return $this->sendError('Class Not Found');
         }
 
@@ -55,7 +54,6 @@ class ClassController extends BaseController
     public function store(StoreClassRequest $request): JsonResponse
     {
         $data = $this->service->createClass($request->validated());
-
         return $this->sendResponse($data, 'Class created', 201);
     }
 
@@ -63,7 +61,7 @@ class ClassController extends BaseController
     {
         $data = $this->service->updateClass($id, $request->validated());
 
-        if (!$data) {
+        if ($data === null) {
             return $this->sendError('Class Not Found');
         }
 
@@ -73,7 +71,8 @@ class ClassController extends BaseController
     public function destroy(int $id): JsonResponse
     {
         $deleted = $this->service->removeClass($id);
-        if (!$deleted) {
+
+        if ($deleted === false) {
             return $this->sendError('Class Not Found');
         }
 

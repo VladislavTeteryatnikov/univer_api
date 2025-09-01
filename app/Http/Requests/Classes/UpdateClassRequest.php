@@ -21,7 +21,8 @@ class UpdateClassRequest extends FormRequest
      */
     public function rules(): array
     {
-        $classId = $this->route('id');
+        $classId = $this->route('class');
+
         return [
             'name' => 'required|string|max:255|unique:classes,name,' . $classId
         ];

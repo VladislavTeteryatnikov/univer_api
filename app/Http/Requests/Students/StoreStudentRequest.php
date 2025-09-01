@@ -23,6 +23,7 @@ class StoreStudentRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email',
             'class_id' => 'nullable|exists:classes,id',
         ];
     }

@@ -4,11 +4,12 @@ namespace App\Services;
 
 use App\Models\Lecture;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 
 class LectureService
 {
     /**
+     * Получить все лекции: id, title
+     *
      * @return array
      */
     public function getAllLectures(): array
@@ -20,6 +21,8 @@ class LectureService
     }
 
     /**
+     * Получить лекцию классами, где пройена и их студентами
+     *
      * @param int $id
      * @return array|null
      */
@@ -32,18 +35,26 @@ class LectureService
         }
 
         return [
+            'id' => $lecture->id,
             'title' => $lecture->title,
             'description' => $lecture->description,
-            'classes' => $this->getClassesWithStudents($lecture->classes),
+            'classes' => $this->formatCompetedClassesWithStudents($lecture->classes),
         ];
     }
 
-    private function getClassesWithStudents(Collection $classes): array
+    /**
+     * Форматирует данные. Фильрует классы, где пройдена лекция с их студентами
+     *
+     * @param Collection $classes
+     * @return array
+     */
+    private function formatCompetedClassesWithStudents(Collection $classes): array
     {
         return $classes
             ->where('pivot.completed', true)
             ->map(function($class) {
                 return [
+                    'class_id' => $class->id,
                     'class_name' => $class->name,
                     'students' => $class->students
                         ->sortBy('id')
@@ -61,6 +72,8 @@ class LectureService
     }
 
     /**
+     * Создать лекцию
+     *
      * @param array $data
      * @return array
      */
@@ -76,6 +89,8 @@ class LectureService
     }
 
     /**
+     * Обновить лекцию
+     *
      * @param int $id
      * @param array $data
      * @return array|null
@@ -91,12 +106,15 @@ class LectureService
         $lecture->update($data);
 
         return [
+            'id' => $lecture->id,
             'title' => $lecture->title,
             'description' => $lecture->description,
         ];
     }
 
     /**
+     * Удалить лекцию
+     *
      * @param int $id
      * @return bool
      */

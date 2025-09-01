@@ -21,7 +21,7 @@ class UpdateLectureRequest extends FormRequest
      */
     public function rules(): array
     {
-        $lectureId = $this->route('id');
+        $lectureId = $this->route('lecture');
 
         return [
             'title' => 'required|string|max:255|unique:lectures,title,' . $lectureId,

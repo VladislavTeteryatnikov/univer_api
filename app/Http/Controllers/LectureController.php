@@ -14,7 +14,6 @@ class LectureController extends BaseController
     public function index(): JsonResponse
     {
         $lectures = $this->service->getAllLectures();
-
         return $this->sendResponse($lectures);
     }
 

@@ -22,12 +22,13 @@ class ClassesLecturesSeeder extends Seeder
             $this->command->error('Классы или лекции не заполнены');
         }
 
-        $classes->each(function (ClassModel $class) use ($lectures) {
+        $classes->each(function ($class) use ($lectures) {
             $lectures = $lectures->shuffle()->take(rand(5, 8));
+            $completedCount = rand(0, $lectures->count());
             $order = 0;
 
             foreach ($lectures as $lecture) {
-                $completed = rand(1, 100) <= 60;
+                $completed = $order < $completedCount;
 
                 DB::table('classes_lectures')->insert([
                         'class_id' => $class->id,

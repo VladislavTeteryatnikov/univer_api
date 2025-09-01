@@ -67,7 +67,7 @@ POST /api/students
 ```
 ___
 ```url
-PUT /api/students
+PUT /api/students/{id}
 ```
 **Описание:** обновить студента
 
@@ -137,7 +137,7 @@ ___
 ```url
 PUT /api/classes/{id}/lectures
 ```
-**Описание:** обновить учебный план
+**Описание:** обновить учебный план класса
 
 **Body:**
 ```json
@@ -162,7 +162,7 @@ POST /api/classes
 ```
 ___
 ```url
-PUT /api/classes
+PUT /api/classes/{id}
 ```
 **Описание:** обновить название класса
 
@@ -232,7 +232,7 @@ POST /api/lectures
 ```
 ___
 ```url
-PUT /api/lectures
+PUT /api/lectures/{id}
 ```
 **Описание:** обновить лекцию
 

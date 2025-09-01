@@ -13,17 +13,16 @@ class ClassSeeder extends Seeder
      */
     public function run(): void
     {
-        $classes = [
-            '9-A',
-            '9-B',
-            '10-A',
-            '10-B',
-            '11-A',
-            '11-B',
-        ];
+        $classes = ['9-A', '9-B', '10-A', '10-B', '11-A', '11-B',];
 
-        foreach ($classes as $className) {
-            ClassModel::firstOrCreate(['name' => $className]);
-        }
+        ClassModel::insert(
+            array_map(function ($name) {
+                return [
+                    'name' => $name,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }, $classes)
+        );
     }
 }

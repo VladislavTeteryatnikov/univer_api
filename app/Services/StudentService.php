@@ -3,76 +3,49 @@
 namespace App\Services;
 
 use App\Models\Student;
+use Illuminate\Database\Eloquent\Collection;
 
 class StudentService
 {
-    public function __construct(private ClassService $classService) {}
-
     /**
-     * Получить всех студентов: id, name
+     * Получить всех студентов
      *
-     * @return array
+     * @return Collection
      */
-    public function getAllStudents(): array
+    public function getAllStudents(): Collection
     {
         return Student::query()
             ->orderBy('id')
-            ->get(['id', 'name'])
-            ->toArray();
+            ->get();
     }
 
     /**
-     * Получить инфо о студенте, включая класс, если есть, и пройденные лекции (completed true)
+     * Получить инфо о студенте, включая класс и лекции
      *
      * @param int $id
-     * @return array|null
+     * @return Student|null
      */
-    public function getStudentInfo(int $id): ?array
+    public function getStudentInfo(int $id): ?Student
     {
         $student = Student::with('class.lectures')->find($id);
 
         if ($student === null) {
             return null;
         }
-
-        return [
-            'id' => $student->id,
-            'name' => $student->name,
-            'email' => $student->email,
-            'class' => $student->class ?
-                [
-                    'id' => $student->class->id,
-                    'name' => $student->class->name,
-                ]
-                : null,
-            'lectures' => $student->class
-                ? $this->classService->getCompletedLectures($student->class)
-                : []
-        ];
+        return $student;
     }
 
     /**
      * Создать студента
      *
      * @param array $data
-     * @return array
+     * @return Student
      */
-    public function createStudent(array $data): array
+    public function createStudent(array $data): Student
     {
         $student = Student::create($data);
         $student->load('class');
-
-        return [
-            'id' => $student->id,
-            'name' => $student->name,
-            'email' => $student->email,
-            'class' => $student->class ?
-                [
-                    'id' => $student->class->id,
-                    'name' => $student->class->name,
-                ]
-                : null
-        ];
+        return $student;
     }
 
     /**
@@ -80,9 +53,9 @@ class StudentService
      *
      * @param int $id
      * @param array $data
-     * @return array|null
+     * @return Student|null
      */
-    public function updateStudent(int $id, array $data): ?array
+    public function updateStudent(int $id, array $data): ?Student
     {
         $student = Student::find($id);
 
@@ -92,18 +65,7 @@ class StudentService
 
         $student->update($data);
         $student->load('class');
-
-        return [
-            'id' => $student->id,
-            'name' => $student->name,
-            'email' => $student->email,
-            'class' => $student->class ?
-                [
-                    'id' => $student->class->id,
-                    'name' => $student->class->name,
-                ]
-                : null
-        ];
+        return $student;
     }
 
     /**

@@ -183,25 +183,4 @@ class ClassService
 
         return $class->delete();
     }
-
-    /**
-     * Получить пройденные лекции класса (completed true)
-     *
-     * @param ClassModel $class
-     * @return array
-     */
-    public function getCompletedLectures(ClassModel $class): array
-    {
-        return $class->lectures
-            ->where('pivot.completed', true)
-            ->sortBy('pivot.order')
-            ->map(function ($lecture) {
-                return [
-                    'id' => $lecture->id,
-                    'title' => $lecture->title,
-                ];
-            })
-            ->values()
-            ->toArray();
-    }
 }

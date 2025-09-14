@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Students;
+namespace App\Http\Resources\Classes;
 
+use App\Http\Resources\Students\StudentIndexResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StudentIndexResource extends JsonResource
+class ClassIndexResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,6 +18,12 @@ class StudentIndexResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+
+            'students' => $this->whenLoaded('students', function () {
+                return StudentIndexResource::collection(
+                    $this->students->sortBy('id')
+                );
+            }),
         ];
     }
 }

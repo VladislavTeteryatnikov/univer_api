@@ -12,21 +12,20 @@ class LectureService
      *
      * @return array
      */
-    public function getAllLectures(): array
+    public function getAllLectures(): Collection
     {
         return Lecture::query()
             ->orderBy('id')
-            ->get(['id', 'title'])
-            ->toArray();
+            ->get();
     }
 
     /**
-     * Получить лекцию классами, где пройена и их студентами
+     * Получить лекцию с классами, где пройдена и их студентами
      *
      * @param int $id
      * @return array|null
      */
-    public function getLectureWithDetails(int $id): ?array
+    public function getLectureWithDetails(int $id): ?Lecture
     {
         $lecture = Lecture::with('classes.students')->find($id);
 
@@ -34,41 +33,7 @@ class LectureService
             return null;
         }
 
-        return [
-            'id' => $lecture->id,
-            'title' => $lecture->title,
-            'description' => $lecture->description,
-            'classes' => $this->formatCompetedClassesWithStudents($lecture->classes),
-        ];
-    }
-
-    /**
-     * Форматирует данные. Фильрует классы, где пройдена лекция с их студентами
-     *
-     * @param Collection $classes
-     * @return array
-     */
-    private function formatCompetedClassesWithStudents(Collection $classes): array
-    {
-        return $classes
-            ->where('pivot.completed', true)
-            ->map(function($class) {
-                return [
-                    'class_id' => $class->id,
-                    'class_name' => $class->name,
-                    'students' => $class->students
-                        ->sortBy('id')
-                        ->map(function ($student) {
-                            return [
-                                'id' => $student->id,
-                                'name' => $student->name,
-                            ];
-                        })
-                        ->toArray()
-                ];
-            })
-            ->values()
-            ->toArray();
+        return $lecture;
     }
 
     /**
@@ -77,15 +42,11 @@ class LectureService
      * @param array $data
      * @return array
      */
-    public function createLecture(array $data): array
+    public function createLecture(array $data): Lecture
     {
         $lecture = Lecture::create($data);
 
-        return [
-            'id' => $lecture->id,
-            'title' => $lecture->title,
-            'description' => $lecture->description,
-        ];
+        return $lecture;
     }
 
     /**
@@ -95,7 +56,7 @@ class LectureService
      * @param array $data
      * @return array|null
      */
-    public function updateLecture(int $id, array $data): ?array
+    public function updateLecture(int $id, array $data): ?Lecture
     {
         $lecture = Lecture::find($id);
 
@@ -105,11 +66,7 @@ class LectureService
 
         $lecture->update($data);
 
-        return [
-            'id' => $lecture->id,
-            'title' => $lecture->title,
-            'description' => $lecture->description,
-        ];
+        return $lecture;
     }
 
     /**

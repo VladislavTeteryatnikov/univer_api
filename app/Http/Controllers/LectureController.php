@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Lectures\StoreLectureRequest;
 use App\Http\Requests\Lectures\UpdateLectureRequest;
+use App\Http\Resources\Lectures\LectureCreateResource;
+use App\Http\Resources\Lectures\LectureIndexResource;
+use App\Http\Resources\Lectures\LectureShowResource;
 use App\Services\LectureService;
 use Illuminate\Http\JsonResponse;
 
@@ -14,7 +17,7 @@ class LectureController extends BaseController
     public function index(): JsonResponse
     {
         $lectures = $this->service->getAllLectures();
-        return $this->sendResponse($lectures);
+        return $this->sendResponse(LectureIndexResource::collection($lectures));
     }
 
     public function show(int $id): JsonResponse
@@ -25,25 +28,33 @@ class LectureController extends BaseController
             return $this->sendError('Lecture Not Found');
         }
 
-        return $this->sendResponse($lecture);
+        return $this->sendResponse(new LectureShowResource($lecture));
 
     }
 
     public function store(StoreLectureRequest $request): JsonResponse
     {
-        $data = $this->service->createLecture($request->validated());
-        return $this->sendResponse($data, 'Lecture created', 201);
+        $lecture = $this->service->createLecture($request->validated());
+
+        return $this->sendResponse(
+            new LectureCreateResource($lecture),
+            'Lecture created',
+            201
+        );
     }
 
     public function update(UpdateLectureRequest $request, int $id): JsonResponse
     {
-        $data = $this->service->updateLecture($id, $request->validated());
+        $lecture = $this->service->updateLecture($id, $request->validated());
 
-        if ($data === null) {
+        if ($lecture === null) {
             return $this->sendError('Lecture Not Found');
         }
 
-        return $this->sendResponse($data, 'Lecture updated');
+        return $this->sendResponse(
+            new LectureCreateResource($lecture),
+            'Lecture updated'
+        );
     }
 
     public function destroy(int $id): JsonResponse

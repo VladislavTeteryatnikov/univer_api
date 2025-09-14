@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Students\StoreStudentRequest;
 use App\Http\Requests\Students\UpdateStudentRequest;
-use App\Http\Resources\StudentIndexResource;
-use App\Http\Resources\StudentCreateResource;
+use App\Http\Resources\Students\StudentIndexResource;
+use App\Http\Resources\Students\StudentCreateResource;
 use App\Http\Resources\Students\StudentShowResource;
 use App\Services\StudentService;
 use Illuminate\Http\JsonResponse;
@@ -35,6 +35,7 @@ class StudentController extends BaseController
     public function store(StoreStudentRequest $request): JsonResponse
     {
         $student = $this->service->createStudent($request->validated());
+
         return $this->sendResponse(
             new StudentCreateResource($student),
             'Student created',

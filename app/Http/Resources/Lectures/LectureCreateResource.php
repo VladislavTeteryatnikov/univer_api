@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Students;
+namespace App\Http\Resources\Lectures;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StudentIndexResource extends JsonResource
+class LectureCreateResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,8 @@ class StudentIndexResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'title' => $this->title,
+            'description' => $this->description,
         ];
     }
 }

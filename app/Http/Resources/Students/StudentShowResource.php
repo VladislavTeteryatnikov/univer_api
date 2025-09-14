@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Students;
 
+use App\Http\Resources\Classes\ClassIndexResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,10 +20,7 @@ class StudentShowResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'class' => $this->whenLoaded('class', function () {
-                return [
-                    'id' => $this->class->id,
-                    'name' => $this->class->name,
-                ];
+                return new ClassIndexResource($this->class);
             }),
             'lectures' => $this->whenLoaded('class', function () {
                 return $this->class->completed_lectures;

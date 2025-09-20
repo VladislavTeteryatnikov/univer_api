@@ -20,7 +20,11 @@ class StudentShowResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'class' => $this->whenLoaded('class', function () {
-                return new ClassResource($this->class);
+                //return new ClassResource($this->class);
+                return [
+                    'id' => $this->class->id,
+                    'name' => $this->class->name,
+                ];
             }),
             'lectures' => $this->whenLoaded('class', function () {
                 return $this->class->completed_lectures;

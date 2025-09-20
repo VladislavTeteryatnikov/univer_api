@@ -39,6 +39,7 @@ GET /api/students/{id}
 **Ответ:**
 ```json
 {
+  "id": 1,
   "name": "Иван Иванов",
   "email": "ivan@example.com",
   "class": {
@@ -65,6 +66,18 @@ POST /api/students
   "class_id": 3
 }
 ```
+**Ответ:**
+```json
+{
+  "id": 1,
+  "name": "Иван Иванов",
+  "email": "ivan@example.com",
+  "class": {
+    "id": 3,
+    "name": "10-A"
+  }
+}
+```
 ___
 ```url
 PUT /api/students/{id}
@@ -76,6 +89,18 @@ PUT /api/students/{id}
 {
   "name": "Иван Иванов",
   "class_id": 3
+}
+```
+**Ответ:**
+```json
+{
+  "id": 1,
+  "name": "Иван Иванов",
+  "email": "ivan@example.com",
+  "class": {
+    "id": 3,
+    "name": "10-A"
+  }
 }
 ```
 ___
@@ -108,8 +133,8 @@ GET /api/classes/{id}
 **Ответ:**
 ```json
 {
-    "class_id": 1,
-    "class_name": "10-B",
+    "id": 1,
+    "name": "10-B",
     "students": [
         { "id": 5, "name": "Иван" },
         { "id": 8, "name": "Ольга" }
@@ -125,8 +150,8 @@ GET /api/classes/{id}/lectures
 **Ответ:**
 ```json
 {
-    "class_id": 3,
-    "class_name": "10-B",
+    "id": 3,
+    "name": "10-B",
     "lectures": [
         { "id": 1, "title": "Алгебра", "order": 0, "completed": true },
         { "id": 2, "title": "Геометрия", "order": 1, "completed": false }
@@ -148,6 +173,17 @@ PUT /api/classes/{id}/lectures
     ]
 }
 ```
+**Ответ:**
+```json
+{
+    "id": 3,
+    "name": "10-B",
+    "lectures": [
+        { "id": 1, "title": "Алгебра", "order": 0, "completed": true },
+        { "id": 4, "title": "Геометрия", "order": 1, "completed": false }
+    ]
+}
+```
 ___
 ```url
 POST /api/classes
@@ -160,6 +196,13 @@ POST /api/classes
     "name": "11-А"
 }
 ```
+**Ответ:**
+```json
+{
+    "id": 3,
+    "name": "11-A"
+}
+```
 ___
 ```url
 PUT /api/classes/{id}
@@ -170,6 +213,13 @@ PUT /api/classes/{id}
 ```json
 { 
     "name": "11-А"
+}
+```
+**Ответ:**
+```json
+{
+    "id": 3,
+    "name": "11-A"
 }
 ```
 ___
@@ -207,8 +257,8 @@ GET /api/lectures/{id}
     "description": "Основы уравнений",
     "classes": [
         {
-            "class_id": 3,
-            "class_name": "10-B",
+            "id": 3,
+            "name": "10-B",
             "students": [
                 { "id": 5, "name": "Иван" },
                 { "id": 8, "name": "Ольга" }
@@ -230,6 +280,15 @@ POST /api/lectures
   "description": "Основы химических реакций"
 }
 ```
+
+**Ответ:**
+```json
+{
+    "id": 1,
+    "title": "Химия",
+    "description": "Основы химических реакций"
+}
+```
 ___
 ```url
 PUT /api/lectures/{id}
@@ -241,6 +300,14 @@ PUT /api/lectures/{id}
 {
   "title": "Химия",
   "description": "Основы химических реакций"
+}
+```
+**Ответ:**
+```json
+{
+    "id": 1,
+    "title": "Химия",
+    "description": "Основы химических реакций"
 }
 ```
 ___

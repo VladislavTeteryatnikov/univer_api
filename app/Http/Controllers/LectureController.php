@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Lectures\StoreLectureRequest;
 use App\Http\Requests\Lectures\UpdateLectureRequest;
-use App\Http\Resources\Lectures\LectureCreateResource;
 use App\Http\Resources\Lectures\LectureIndexResource;
 use App\Http\Resources\Lectures\LectureShowResource;
 use App\Services\LectureService;
@@ -37,7 +36,7 @@ class LectureController extends BaseController
         $lecture = $this->service->createLecture($request->validated());
 
         return $this->sendResponse(
-            new LectureCreateResource($lecture),
+            new LectureShowResource($lecture),
             'Lecture created',
             201
         );
@@ -52,7 +51,7 @@ class LectureController extends BaseController
         }
 
         return $this->sendResponse(
-            new LectureCreateResource($lecture),
+            new LectureShowResource($lecture),
             'Lecture updated'
         );
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Classes\StoreClassRequest;
 use App\Http\Requests\Classes\UpdateClassRequest;
 use App\Http\Requests\Classes\UpdateStudyPlanRequest;
+use App\Http\Resources\Classes\ClassResource;
 use App\Services\ClassService;
 use Illuminate\Http\JsonResponse;
 
@@ -15,7 +16,7 @@ class ClassController extends BaseController
     public function index(): JsonResponse
     {
         $classes = $this->service->getAllClasses();
-        return $this->sendResponse($classes);
+        return $this->sendResponse(ClassResource::collection($classes));
     }
 
     public function show(int $id): JsonResponse
@@ -26,46 +27,57 @@ class ClassController extends BaseController
             return $this->sendError('Class Not Found');
         }
 
-        return $this->sendResponse($class);
+        return $this->sendResponse(new ClassResource($class));
     }
 
     public function studyPlan(int $id): JsonResponse
     {
-        $data = $this->service->getClassStudyPlan($id);
+        $classWithStudyPlan = $this->service->getClassStudyPlan($id);
 
-        if ($data === null) {
+        if ($classWithStudyPlan === null) {
             return $this->sendError('Class Not Found');
         }
 
-        return $this->sendResponse($data);
+        return $this->sendResponse(new ClassResource($classWithStudyPlan));
     }
 
     public function updateStudyPlan(UpdateStudyPlanRequest $request, int $id): JsonResponse
     {
-        $updated = $this->service->updateClassStudyPlan($id, $request->input('lectures'));
+        $class = $this->service->updateClassStudyPlan($id, $request->input('lectures'));
 
-        if ($updated === false) {
+        if ($class === false) {
             return $this->sendError('Class Not Found');
         }
 
-        return $this->sendResponse(null, 'Study plan updated');
+        return $this->sendResponse(
+            new ClassResource($class),
+            'Study plan updated'
+        );
     }
 
     public function store(StoreClassRequest $request): JsonResponse
     {
-        $data = $this->service->createClass($request->validated());
-        return $this->sendResponse($data, 'Class created', 201);
+        $class = $this->service->createClass($request->validated());
+
+        return $this->sendResponse(
+            new ClassResource($class),
+            'Class created',
+            201
+        );
     }
 
     public function update(UpdateClassRequest $request, int $id): JsonResponse
     {
-        $data = $this->service->updateClass($id, $request->validated());
+        $class = $this->service->updateClass($id, $request->validated());
 
-        if ($data === null) {
+        if ($class === null) {
             return $this->sendError('Class Not Found');
         }
 
-        return $this->sendResponse($data, 'Class updated');
+        return $this->sendResponse(
+            new ClassResource($class),
+            'Class updated'
+        );
     }
 
     public function destroy(int $id): JsonResponse

@@ -14,9 +14,14 @@ class LectureIndexResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $hasPivot = isset($this->pivot) && isset($this->pivot->order);
+
         return [
             'id' => $this->id,
             'title' => $this->title,
+
+            'order' => $this->when($hasPivot, fn() => $this->pivot->order),
+            'completed' => $this->when($hasPivot, fn() => (bool) $this->pivot->completed),
         ];
     }
 }

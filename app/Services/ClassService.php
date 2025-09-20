@@ -8,42 +8,32 @@ use Illuminate\Database\Eloquent\Collection;
 class ClassService
 {
     /**
-     * Получить все классы: id, name
+     * Получить все классы, отсортированные по id
      *
-     * @return array
+     * @return Collection
      */
-    public function getAllClasses(): array
+    public function getAllClasses(): Collection
     {
         return ClassModel::query()
             ->orderBy('id')
-            ->get(['id', 'name'])
-            ->toArray();
+            ->get();
     }
 
     /**
      * Получить инфо о классе, включая его студентов
      *
      * @param int $id
-     * @return array|null
+     * @return ClassModel|null
      */
-    public function getClassWithStudents(int $id): ?array
+    public function getClassWithStudents(int $id): ?ClassModel
     {
-        $class = ClassModel::with('students')->find($id);
+        $classWithStudents = ClassModel::with('students')->find($id);
 
-        if ($class === null) {
+        if ($classWithStudents === null) {
             return null;
         }
 
-        return [
-            'class_id' => $class->id,
-            'class_name' => $class->name,
-            'students' => $class->students->map(function ($student) {
-                return [
-                    'id' => $student->id,
-                    'name' => $student->name,
-                ];
-            })->toArray()
-        ];
+        return $classWithStudents;
     }
 
 
@@ -51,42 +41,17 @@ class ClassService
      * Получить учебный план класса: лекции с order и completed
      *
      * @param int $id
-     * @return array|null
+     * @return ClassModel|null
      */
-    public function getClassStudyPlan(int $id): ?array
+    public function getClassStudyPlan(int $id): ?ClassModel
     {
-        $class = ClassModel::with('lectures')->find($id);
+        $classWithStudyPlan = ClassModel::with('lectures')->find($id);
 
-        if ($class === null) {
+        if ($classWithStudyPlan === null) {
             return null;
         }
 
-        return [
-            'class_id' => $class->id,
-            'class_name' => $class->name,
-            'lectures' => $this->prepareLecturesForStudyPlan($class->lectures),
-        ];
-    }
-
-    /**
-     * Подготовить лекции для показа в учебном плане
-     *
-     * @param Collection $lectures
-     * @return array
-     */
-    private function prepareLecturesForStudyPlan(Collection $lectures): array
-    {
-        return $lectures
-            ->sortBy('pivot.order')
-            ->map(function ($lecture) {
-                return [
-                    'id' => $lecture->id,
-                    'title' => $lecture->title,
-                    'order' => $lecture->pivot->order,
-                    'completed' => (bool) $lecture->pivot->completed,
-                ];
-            })->values()
-            ->toArray();
+        return $classWithStudyPlan;
     }
 
     /**
@@ -94,20 +59,21 @@ class ClassService
      *
      * @param int $classId
      * @param array $lectures
-     * @return bool
+     * @return ClassModel
      */
-    public function updateClassStudyPlan(int $classId, array $lectures): bool
+    public function updateClassStudyPlan(int $classId, array $lectures): ?ClassModel
     {
         $class = ClassModel::find($classId);
 
         if ($class === null) {
-            return false;
+            return null;
         }
 
         $syncData = $this->prepareDataForUpdateStudyPlan($lectures);
         $class->lectures()->sync($syncData);
+        $class->load('lectures');
 
-        return true;
+        return $class;
     }
 
     /**
@@ -132,16 +98,13 @@ class ClassService
      * Создать класс
      *
      * @param array $data
-     * @return array
+     * @return ClassModel
      */
-    public function createClass(array $data): array
+    public function createClass(array $data): ClassModel
     {
         $class = ClassModel::create($data);
 
-        return [
-            'id' => $class->id,
-            'class_name' => $class->name,
-        ];
+        return $class;
     }
 
     /**
@@ -149,9 +112,9 @@ class ClassService
      *
      * @param int $id
      * @param array $data
-     * @return array|null
+     * @return ClassModel|null
      */
-    public function updateClass(int $id, array $data): ?array
+    public function updateClass(int $id, array $data): ?ClassModel
     {
         $class = ClassModel::find($id);
 
@@ -160,11 +123,7 @@ class ClassService
         }
 
         $class->update($data);
-
-        return [
-            'id' => $class->id,
-            'class_name' => $class->name
-        ];
+        return $class;
     }
 
     /**

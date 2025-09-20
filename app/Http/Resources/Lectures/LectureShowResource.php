@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Lectures;
 
-use App\Http\Resources\Classes\ClassIndexResource;
+use App\Http\Resources\Classes\ClassResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +20,7 @@ class LectureShowResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'classes' => $this->whenLoaded('classes', function () {
-                return ClassIndexResource::collection(
+                return ClassResource::collection(
                     $this->classes->where('pivot.completed', true)
                 );
             })
